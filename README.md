@@ -62,7 +62,7 @@ To run the Simple TB Trends App locally, follow these steps:
 1. **Clone the Repository**
 
     ```bash
-    git clone https://github.ubc.ca/MDS-2023-24/DSCI_532_individual-assignment_zywkloo.git
+    git clone https://github.com/zywkloo/SimpleTBViz.git
     ```
 
 2. **Navigate to the Project Directory**
