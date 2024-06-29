@@ -64,21 +64,15 @@ To run the Simple TB Trends App locally, follow these steps:
     ```bash
     git clone https://github.com/zywkloo/SimpleTBViz.git
     ```
-
-2. **Navigate to the Project Directory**
-
-    ```bash
-    cd DSCI_532_individual-assignment_zywkloo
-    ```
-
-3. **Create and Activate a Conda Environment**
+    
+2. **Create and Activate a Conda Environment**
 
     ```bash
     conda env create -f environment.yml
     conda activate SimpleTB
     ```
 
-4. **Run the Application**
+3. **Run the Application**
 
     ```bash
     uvicorn src.app:app --reload
