@@ -1,0 +1,106 @@
+/* Ensure the main container takes at least full viewport height */
+/* html, body {
+    height: 100%;
+    margin: 0;
+} */
+
+/* Use flex column layout to position the footer at the bottom */
+body {
+    display: flex;
+    flex-direction: row; /* Stack flex items vertically */
+    min-height: 100vh;
+}
+
+/* Make content expand to fill available space, pushing the footer down */
+.content {
+    flex: 1; /* Allow the content to grow */
+    padding-left: 50px;
+}
+
+h1 {
+    font-family: 'Lato', sans-serif; /* Apply Lato font */
+    font-weight: 700; /* Make the title bold */
+    font-size: 1.6em; /* Increase the font size */
+    color: #333; /* Set a darker color for better readability */
+    text-align: center; /* Center-align the title */
+}
+.sidebar {
+    width: 350px;
+    background-color: #f4f4f4;
+    padding-left: 20px;
+    height: 100vh;
+}
+path.unit:hover{
+    fill:red;
+}
+
+.background {
+    fill: rgba(164, 166, 159, 0.712);
+}
+.map-container {
+    height: 400px;
+    width: 850px;
+    position: relative;
+}
+#chart {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 6px;
+    font-size: 14px;
+    background: lightsteelblue;
+    border: 0px;
+    pointer-events: none;
+    opacity: 0;
+}
+label {
+    margin: 10px;
+    padding: 5px;
+    font-size: 14px;
+    display: block;
+}
+input[type="checkbox"] {
+    margin-right: 10px;
+}
+.input-group {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin: 10px 0;
+}
+.radio-group {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin: 10px 0;
+}
+.radio-group label {
+    margin-right: 5px; /* Space out the labels */
+    font-size: 14px;
+    padding: 5px;
+    display: flex;
+    align-items: center; /* Align the text with the radio buttons */
+}
+.radio-group input[type="radio"] {
+    margin-right: 5px; /* Space between the radio button and label text */
+}
+footer {
+    width: 80%;
+    background-color: #e8e8e8; /* Footer background color */
+    color: #333; /* Text color */
+    padding: 10px 0; /* Padding for the footer */
+    position: absolute; /* Position absolute to stay at the bottom */
+    bottom: 0; /* Align to the bottom */
+    left: 0; /* Align to the left */
+    text-align: center; /* Center the text */
+    font-family: 'Lato', sans-serif; /* Apply Lato font */
+    font-size: 0.8em; /* Set the font size */
+}
+.footer-content {
+    max-width: 1140px; /* Set the max-width for the content */
+    margin: 0 auto; /* Center the content */
+    padding: 0 15px; /* Padding on sides */
+}

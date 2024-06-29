@@ -1,0 +1,12 @@
+name: simpleTB
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - ipykernel
+  - pip
+  - vega_datasets
+  - pip:
+      - fastapi
+      - uvicorn
+      - numpy

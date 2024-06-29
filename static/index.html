@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global TB-HIV Co-infection Distribution</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <title>Global TB Trends Visualization 2022</title>
+</head>
+<body>
+    <div class="content">
+        <h1>Global Tuberculosis and HIV Co-infection per Million People in 2022</h1>
+        <p>* Hover over a country on the map to view detailed statistics; click to explore historical trends for that country. </p>
+        <div id="map" class="map-container"></div>
+        <div id="tooltip" class="tooltip"></div>
+        <div id="chart"></div>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="https://d3js.org/topojson.v3.min.js"></script>
+        <script src="https://d3js.org/d3-geo.v2.min.js"></script>
+        <script src="/src/js/d3-geomap/d3-geomap.min.js"></script>
+        <script type="module">
+            import { drawChoroplethMap } from '/src/js/drawChoroplethMap.js';
+            import { populateDatalist } from '/src/js/populateDatalist.js';
+            import { queryCountryInfo } from '/src/js/queryCountryInfo.js';
+            import { loadCountryHistogram } from '/src/js/histogram.js'
+
+            // Declare currentMetric and currentISO3 at the top level of the script
+            var currentMetric = 'mortality_permillion'; // default metric
+            var currentISO3 = 'USA'; // default ISO3
+            var currentCountryName = 'United States of America'; // default country
+
+            function setCurrentISO3(countryInfo={}) {
+                currentISO3 = countryInfo.iso3;
+                currentCountryName =  countryInfo.countryName;
+            }
+
+            // Global variable to hold the country data
+            let globalCountryData = null;
+
+            // Function to load country data
+            async function loadCountryData() {
+                try {
+                    globalCountryData = await d3.json('/static/data/tb_data_world_for_d3.json');
+                    populateDatalist(globalCountryData);
+                } catch (error) {
+                    console.error('Failed to load country data:', error);
+                    globalCountryData = [];
+                }
+            }
+
+            // Call this function when the page loads
+            loadCountryData();
+
+            // Update drawChoroplethMap to use globalCountryData
+            async function updateMapWithCountryInfo(inputInfo) {
+                let countryInfo = {};
+                if (inputInfo.iso3 && !inputInfo.countryName) {
+                    let foundCountry = globalCountryData.find(entry => entry.iso3 === inputInfo.iso3);
+                    countryInfo = { iso3: inputInfo.iso3, countryName: foundCountry ? foundCountry.country : undefined };
+                } else if (inputInfo.countryName && !inputInfo.iso3) {
+                    let foundCountry = globalCountryData.find(entry => entry.country === inputInfo.countryName);
+                    countryInfo = { countryName: inputInfo.countryName, iso3: foundCountry ? foundCountry.iso3 : undefined };
+                }
+                setCurrentISO3(countryInfo)
+                loadCountryHistogram(countryInfo, currentMetric);
+            }
+
+            // Event listeners for input fields
+            document.getElementById('countryNameInput').addEventListener('input', function() {
+                if (this.value) {
+                    updateMapWithCountryInfo({ countryName: this.value });
+                }
+            });
+
+            document.getElementById('iso3Input').addEventListener('input', function() {
+                if (this.value) {
+                    updateMapWithCountryInfo({ iso3: this.value });
+                }
+            });
+
+            // Set up event listeners
+            document.querySelectorAll('input[name="metricType"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    if (this.checked) {
+                        currentMetric = this.value; // Update currentMetric based on the checked input
+                        drawChoroplethMap({iso3:currentISO3, countryName: currentCountryName}, currentMetric, setCurrentISO3); // Call drawChoroplethMap with updated metric
+                    }
+                });
+            });
+
+            // Initial call to draw the map
+            drawChoroplethMap({iso3:currentISO3, countryName: currentCountryName}, currentMetric, setCurrentISO3);
+        </script>
+    </div>
+    <div class="sidebar">
+        <div class="input-group">
+            <label for="countryNameInput">Country Name:</label>
+            <input type="text" id="countryNameInput" name="countryName" placeholder="Enter country name" list="countryNameList">
+            <datalist id="countryNameList">
+                <!-- Options will be populated by the JavaScript -->
+            </datalist>
+        </div>
+        <div class="input-group">
+            <label for="iso3Input">ISO3 Code:</label>
+            <input type="text" id="iso3Input" name="iso3" placeholder="Enter ISO3 code" list="iso3List">
+            <datalist id="iso3List">
+                <!-- Options will be populated by the JavaScript -->
+            </datalist>
+        </div>
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="metricType" id="incidenceCheckbox" value="incidence_permillion">Incidence Per Million
+            </label>
+            <label>
+                <input type="radio" name="metricType" id="mortalityCheckbox" value="mortality_permillion" checked>Mortality Per Million
+            </label>
+        </div>
+        <div id="country-chart"></div>
+        <p style="font-size: 14px;">Unit: Cases per 1,000,000 people</p>
+        <h3>Data and Credits</h3>
+        <p>Data source: the <a href="https://www.who.int/teams/global-tuberculosis-programme/data" target="_blank">World Health Organization (WHO)</a>.</p>
+        <p style="font-size: 11px;">Developed by Victor Yiwei Zhang, MDS @UBC with 🩷</p>
+        <a href="https://fastapi.tiangolo.com/" target="_blank">
+            <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI Badge">
+        </a>
+        <a href="https://d3js.org/" target="_blank">
+            <img src="https://img.shields.io/badge/D3.js-F9A03C?style=for-the-badge&logoColor=white" alt="D3.js Badge">
+        </a>
+        <a href="https://www.heroku.com/" target="_blank">
+            <img src="https://img.shields.io/badge/Heroku-430098?style=for-the-badge&logo=heroku&logoColor=white" alt="Heroku Badge">
+        </a>
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
+            <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript Badge">
+        </a>
+        <a href="https://html.spec.whatwg.org/multipage/" target="_blank">
+            <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5 Badge">
+        </a>
+        <a href="https://www.w3.org/Style/CSS/" target="_blank">
+            <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3 Badge">
+        </a>
+        <a href="https://www.python.org/" target="_blank">
+            <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python Badge">
+        </a>
+        <a href="https://pandas.pydata.org/" target="_blank">
+            <img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white" alt="Pandas Badge">
+        </a>
+        <a href="https://www.who.int/" target="_blank">
+            <img src="https://img.shields.io/badge/WHO-0093D5?style=for-the-badge&logo=unitednations&logoColor=white" alt="WHO Badge">
+        </a>
+    </div>
+</body>
+</html>
